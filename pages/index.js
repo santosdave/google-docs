@@ -5,17 +5,21 @@ import {useState} from "react";
 import Icon from '@material-tailwind/react/Icon';
 import Image from "next/image";
 import Login from "../components/Login";
+import DocumentRow from "../components/DocumentRow";
 import {getSession, useSession} from 'next-auth/client';
 import Modal from "@material-tailwind/react/Modal";
 import ModalBody from "@material-tailwind/react/ModalBody";
 import Modalfooter from "@material-tailwind/react/Modalfooter";
 import {db} from "../firebase";
+import {useCollectionOnce} from  "react-firebase-hooks/firestore";
 import firebase from "firebase";
 export default function Home() {
   const [session]= useSession();
+  
+  if(!session) return <Login/>;
   const [showModal, setShowModal]= useState(false);
   const [input, setInput]= useState("");
-  if(!session) return <Login/>;
+  const [snapshot]=useCollectionOnce(db.collection("userDocs").doc(session.user.email).collection("docs").orderBy("timestamp","desc"));
   const createDocument= ()=>{
     if(!input) return;
     
@@ -102,7 +106,16 @@ export default function Home() {
             <p className="mr-12">Date Created</p>
             <Icon name="folder" size="3xl" color="gray"/>
           </div>
+          {snapshot?.docs.map(doc =>(
+          <DocumentRow
+            key={doc.id}
+            id={doc.id}
+            fileName={doc.data().fileName}
+            date={doc.data().timestamp}
+          />
+        ))}
         </div>
+        
       </section>
     </div>
   )
