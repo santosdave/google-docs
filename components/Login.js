@@ -10,6 +10,15 @@ function Login() {
           width={"550"}
           objectFit={"contain"}
           />  
+          <Button
+          className="w-44 mt-2"
+          color="blue"
+          buttonType="filled"
+          ripple="light"
+          onClick={signIn}
+          >
+            Login
+          </Button>
         </div>
     )
 }
